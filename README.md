@@ -6,20 +6,17 @@ Predict whether a borrower will default on a loan.
 ## Dataset
 Kaggle Credit Risk Dataset (32,581 records)
 
-## Models Used
-- Logistic Regression
-- Random Forest
+## Results
 
-## Best Model
-Random Forest
+Best Model: Random Forest
 
 Accuracy: 0.93  
-ROC-AUC: 0.93
+ROC-AUC: 0.93  
 
-## Key Features
-loan_percent_income  
-person_income  
-loan_int_rate
+Key Predictors:
+- loan_percent_income
+- person_income
+- loan_int_rate
 
 ## Tools
 Python  
