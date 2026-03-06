@@ -1,91 +1,144 @@
-# Credit Risk Prediction using Machine Learning
+## Credit Risk Prediction using Machine Learning
 
-# Overview
+## Overview
+This project builds a machine learning pipeline to predict whether a borrower will default on a loan using financial and credit history features.
 
-This project develops a machine learning pipeline to predict whether a borrower will default on a loan using financial and credit history features. Predicting default risk is an important task for financial institutions because it enables lenders to make informed lending decisions and manage credit exposure effectively.The project implements a full data science workflow including exploratory data analysis, feature engineering, supervised machine learning, hyperparameter tuning, and model evaluation.
+Credit risk prediction is an important problem in banking and financial services because it helps lenders identify high-risk borrowers and reduce potential losses.
 
-# Problem Statement
+This project demonstrates a full data science workflow including exploratory data analysis, feature engineering, model training, hyperparameter tuning, and model evaluation.
 
-Financial institutions face significant losses due to loan defaults. The objective of this project is to build predictive models that classify whether a borrower will default on a loan based on demographic and financial attributes.
+---
 
-# Dataset
+## Problem Statement
+Financial institutions face significant losses when borrowers fail to repay loans.
 
-Dataset: Credit Risk Dataset (Kaggle)
-Records: 32,581
-Target variable: loan_status
-Key features include:
-person_age
-person_income
-person_home_ownership
-person_emp_length
-loan_intent
-loan_percent_income
-loan_int_rate
-cb_person_cred_hist_length
+The goal of this project is to develop machine learning models that can classify borrowers as likely to **default** or **not default** based on demographic and financial information.
 
-# Project Workflow
+---
 
-The project follows a structured machine learning pipeline.
-1. Data Loading
-The dataset was downloaded from Kaggle and loaded into a pandas DataFrame.
-2. Exploratory Data Analysis
-EDA was performed to understand distributions, relationships, and potential predictors.
-Analyses included:
-missing value analysis
-distribution plots for numerical variables
-categorical feature distributions
-correlation heatmap
-default rate analysis
-3. Feature Engineering
+## Dataset
+Source: Kaggle Credit Risk Dataset
+
+Records: ~32,000 borrowers
+
+Target variable:
+loan_status  
+0 = No Default  
+1 = Default
+
+### Key Features
+- person_age
+- person_income
+- person_home_ownership
+- person_emp_length
+- loan_intent
+- loan_percent_income
+- loan_int_rate
+- credit history length
+
+---
+
+## Exploratory Data Analysis
+EDA was performed to understand relationships between borrower characteristics and default risk.
+
+Analysis included:
+
+- missing value analysis
+- numerical feature distributions
+- categorical feature distributions
+- correlation heatmap
+- default rate by home ownership
+- income vs loan default analysis
+
+---
+
+## Feature Engineering
 A new feature was created:
+
 credit_history_to_age_ratio
-This feature measures the proportion of credit history relative to borrower age and provides insight into credit maturity.
 
-# Machine Learning Models
+This feature measures the maturity of a borrower's credit history relative to their age.
 
-The following models were implemented:
-Logistic Regression
+---
+
+## Machine Learning Pipeline
+The modeling workflow uses a structured scikit-learn pipeline.
+
+Steps included:
+
+1. Train-test split with stratification
+2. Missing value imputation
+3. One-hot encoding for categorical variables
+4. Feature scaling for numerical features
+5. Model training
+6. Hyperparameter tuning using GridSearchCV
+
+Models implemented:
+
+- Logistic Regression
+- Random Forest
+
+
+## Model Evaluation
+Models were evaluated using:
+
+- Accuracy
+- F1 Score
+- ROC-AUC
+
+### Best Model
 Random Forest
 
-Hyperparameter tuning was applied using GridSearchCV.
+Performance:
 
-The modeling pipeline includes:
-missing value imputation
-feature scaling
-one hot encoding for categorical variables
-model training
-
-# Model Evaluation
-
-Models were evaluated using:
-Accuracy
-F1 Score
-ROC-AUC
-Random Forest produced the best performance.
-Results:
-Accuracy: 0.93
-F1 Score: 0.82
+Accuracy: 0.93  
+F1 Score: 0.82  
 ROC-AUC: 0.93
 
-# Threshold Optimization
-
+## Threshold Optimization
 The classification threshold was optimized to improve performance on the minority class (loan defaults).
-The best threshold was approximately:
-0.55
-This improved the balance between precision and recall.
 
-# Feature Importance
+Best threshold ≈ 0.55
 
-The most important predictors identified by the Random Forest model were:
-loan_percent_income
-person_income
-loan_int_rate
-loan_amnt
-person_emp_length
+This improved recall while maintaining high precision.
+
+## Feature Importance
+The most influential predictors identified by the Random Forest model were:
+
+- loan_percent_income
+- person_income
+- loan_int_rate
+- loan_amnt
+- person_emp_length
+
 These variables strongly influence the likelihood of loan default.
 
-# Key Insights
 
-Borrowers with a higher loan burden relative to income are more likely to default.
-Interest rates and borrower income also play a major role in determining default risk.
-These insights can assist financial institutions in improving risk assessment and credit approval strategies.
+## Key Insights
+Borrowers with higher loan-to-income ratios have a significantly higher probability of default.
+
+Interest rate and borrower income are also strong predictors of credit risk.
+
+These insights can help financial institutions improve lending decisions and risk management strategies.
+
+
+## Technologies Used
+Python  
+pandas  
+NumPy  
+scikit-learn  
+Matplotlib  
+Seaborn  
+
+## Future Improvements
+Possible extensions of this project include:
+
+- XGBoost and LightGBM models
+- SHAP model explainability
+- deployment using Streamlit
+- automated credit scoring system
+
+
+
+## Author
+Indraneel Mannava
