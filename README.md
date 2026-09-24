@@ -1,127 +1,60 @@
-# Credit Risk Prediction using Machine Learning
+# Credit Risk Prediction: Loan Default Model
 
-## Overview
-This project develops a machine learning pipeline to predict whether a borrower will default on a loan using financial and credit history features. Credit risk prediction is a critical task in the financial industry because it helps lenders identify high-risk borrowers and reduce potential financial losses.
+An end-to-end scikit-learn pipeline that predicts whether a borrower will default, using 32,581 loan records with borrower income, employment, credit history, and loan terms. About 22% of loans in the data defaulted.
 
-The project demonstrates a complete machine learning workflow including exploratory data analysis, feature engineering, supervised machine learning, hyperparameter tuning, and model evaluation.
+<img width="989" height="590" alt="feature_importance" src="https://github.com/user-attachments/assets/dcd159e9-4edb-49bf-bd9a-0255f3c4a61e" />
 
-## Problem Statement
-Financial institutions face significant losses when borrowers fail to repay loans. The objective of this project is to build predictive models that classify whether a borrower is likely to default on a loan based on demographic and financial attributes.
+## Key findings
 
+- **Loan-to-income ratio is the strongest predictor of default.** Borrowers committing a larger share of their income to the loan default far more often.
+- **Income and interest rate come next.** Lower-income borrowers and higher-rate loans (which already reflect higher assessed risk) default more.
+- **Renters default at more than 4× the rate of homeowners:** about 32% of renters vs. 7% of borrowers who own their home outright.
+
+**Business takeaway:** a lender can tighten approval rules around loan-to-income ratio before anything else. It's the single most informative, easy-to-verify signal in the data.
+
+## Model results (held-out test set, 6,517 loans, 1,422 defaults)
+
+| Model | Accuracy | ROC-AUC | Default precision | Default recall | F1 |
+|---|---|---|---|---|---|
+| Logistic Regression (tuned) | 0.87 | 0.87 | 0.77 | 0.56 | 0.65 |
+| **Random Forest** | **0.93** | **0.93** | **0.97** | **0.71** | **0.82** |
+
+When Random Forest flags a borrower as a likely defaulter it is right 97% of the time, and it catches about 71% of actual defaults. Logistic Regression was tuned with `GridSearchCV` (regularization strength, solver, class weighting) but improved very little over its baseline, which suggests the relationships here are non-linear, where tree models have the edge.
+
+A threshold analysis on the Random Forest showed a flat trade-off between 0.4 and 0.6. Lowering the threshold to catch more defaulters costs precision fairly quickly, which is the kind of decision a lender would set based on its own loss vs. approval-rate targets.
+
+## Pipeline
+
+Built as a single scikit-learn `Pipeline` so every preprocessing step is learned from training data only (no leakage into the test set):
+
+1. **Stratified 80/20 train/test split** first.
+2. **Feature engineering** (inside the pipeline via `FunctionTransformer`): capped impossible values (ages up to 144, employment length up to 123 years) and created `credit_history_to_age_ratio`.
+3. **Preprocessing** (`ColumnTransformer`): median imputation and scaling for numeric features; most-frequent imputation and one-hot encoding for categorical ones.
+4. **Models:** Logistic Regression and Random Forest; hyperparameter tuning with 5-fold `GridSearchCV`.
+5. **Evaluation:** accuracy, ROC-AUC, precision/recall/F1 on the default class, confusion matrix, and feature importances.
 
 ## Dataset
-Source: Kaggle Credit Risk Dataset   
 
-Target Variable:  
-loan_status  
-0 = No Default  
-1 = Default  
+[Credit Risk Dataset (Kaggle)](https://www.kaggle.com/datasets/laotse/credit-risk-dataset): 32,581 loans with 11 features including `person_income`, `person_home_ownership`, `loan_intent`, `loan_grade`, `loan_amnt`, `loan_int_rate`, `loan_percent_income`, and credit bureau history.
 
-### Key Features
-- person_age  
-- person_income  
-- person_home_ownership  
-- person_emp_length  
-- loan_intent  
-- loan_percent_income  
-- loan_int_rate  
-- cb_person_cred_hist_length  
+## How to run
 
+```bash
+pip install -r requirements.txt
+jupyter notebook credit_risk_ml_pipeline.ipynb
+```
 
-## Exploratory Data Analysis
-Exploratory data analysis was performed to understand relationships between borrower characteristics and loan default risk.
+The notebook downloads the data automatically with `kagglehub`.
 
-Key analyses included:
+## Tech stack
 
-- Missing value analysis  
-- Distribution of numerical variables  
-- Categorical feature distributions  
-- Loan default distribution  
-- Income vs loan default analysis  
-- Loan intent vs default analysis  
-- Correlation heatmap  
-- Default rate by home ownership  
+Python · pandas · NumPy · scikit-learn (Pipeline, ColumnTransformer, GridSearchCV) · Matplotlib · Seaborn
 
+## Next steps
 
-## Feature Engineering
-A new feature was created:
+- Gradient boosting (XGBoost / LightGBM) and SHAP explanations for individual loan decisions.
+- An expected-loss view (probability of default × loan amount) to rank the portfolio by dollar risk, not just default probability.
+- Check model behavior without `loan_grade` and `loan_int_rate`, since both are set by the lender and already encode its own risk assessment.
 
-credit_history_to_age_ratio
-
-This feature measures the maturity of a borrower’s credit history relative to their age.
-
-
-## Machine Learning Pipeline
-A structured scikit-learn pipeline was implemented to ensure reproducibility and prevent data leakage.
-
-Pipeline steps:
-
-1. Train-test split with stratification  
-2. Missing value imputation  
-3. One-hot encoding for categorical variables  
-4. Feature scaling for numerical variables  
-5. Model training  
-6. Hyperparameter tuning using GridSearchCV  
-
-Models implemented:
-
-- Logistic Regression  
-- Random Forest  
-
-## Model Performance
-
-| Model | Accuracy | F1 Score | ROC-AUC |
-|------|------|------|------|
-| Logistic Regression | 0.87 | 0.65 | 0.87 |
-| Random Forest | 0.93 | 0.82 | 0.93 |
-
-Random Forest achieved the best overall performance.
-
-
-## Threshold Optimization
-To improve prediction performance for loan defaults, classification thresholds were evaluated.
-
-Best threshold ≈ **0.55**
-
-This threshold produced the best balance between precision and recall for detecting default cases.
-
-## Feature Importance
-The most influential predictors identified by the Random Forest model were:
-
-- loan_percent_income  
-- person_income  
-- loan_int_rate  
-- loan_amnt  
-- person_emp_length  
-
-These variables strongly influence the likelihood of borrower default.
-
-
-## Key Insights
-Borrowers with a higher loan-to-income ratio are more likely to default.
-
-Interest rates and borrower income also play a major role in determining credit risk. These insights can help financial institutions improve lending decisions and risk management strategies.
-
-
-## Technologies Used
-- Python  
-- pandas  
-- NumPy  
-- scikit-learn  
-- Matplotlib  
-- Seaborn  
-
-
-
-## Future Improvements
-Possible extensions include:
-
-- Gradient boosting models such as XGBoost or LightGBM  
-- Model explainability using SHAP  
-- Deployment using Streamlit  
-- Automated credit scoring system  
-
-
-
-## Author
-Indraneel Mannava
+---
+**Author:** Indraneel Mannava · [LinkedIn](https://www.linkedin.com/in/indraneel-sarma-mannava/)
